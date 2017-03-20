@@ -66,9 +66,7 @@ class AirCargoProblem(Problem):
                                        ]
                         precond_neg = []
                         effect_add = [expr("In({}, {})".format(cargo, plane))]
-                        # When we load a cargo in the plane, we consider that the cargo is no more at the
-                        # airport (we consider it at the airport only after unload)
-                        effect_rem = [expr("In({}, {})".format(cargo, airport))]
+                        effect_rem = [expr("At({}, {})".format(cargo, airport))]
                         load = Action(expr("Load({}, {}, {})".format(cargo, plane, airport)),
                                       [precond_pos, precond_neg],
                                       [effect_add, effect_rem])
@@ -142,7 +140,7 @@ class AirCargoProblem(Problem):
                 if clause in kb.clauses:
                     is_possible = False
             if is_possible:
-                # yield action
+                #yield action
                 # we could have use yield as recommended in Problem class definition
                 # but the default unittest requires a list: thus we return a list
                 actions.append(action)
@@ -192,6 +190,7 @@ class AirCargoProblem(Problem):
 
     def h_1(self, node: Node):
         # note that this is not a true heuristic
+        print("H1")
         h_const = 1
         return h_const
 
@@ -203,6 +202,7 @@ class AirCargoProblem(Problem):
         condition.
         '''
         # requires implemented PlanningGraph class
+        print("Sem level")
         pg = PlanningGraph(self, node.state)
         pg_levelsum = pg.h_levelsum()
         return pg_levelsum
@@ -214,9 +214,11 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         '''
+        print("Ignore precondition call")
         # we count the number of goal, and each goal correspond to having a cargo at a specific destination
         # as we ignore precondition, each goal could be done in one action (Unload)
         count = len(self.goal)
+        # TODO: A revoir laurent
 
         # So the minimum is 1 action by goal (unload the
         return count
@@ -345,6 +347,8 @@ def air_cargo_p3() -> AirCargoProblem:
             expr('At(C3, JFK)'),
             expr('At(C2, SFO)'),
             expr('At(C4, SFO)')]
+
+
 
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
